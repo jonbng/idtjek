@@ -3,7 +3,7 @@ import * as Haptics from 'expo-haptics';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { SymbolView, type SymbolViewProps } from 'expo-symbols';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Linking, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { AppState, Linking, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Animated, {
   cancelAnimation,
   Easing,
@@ -217,7 +217,7 @@ function formatRelative(at: number, now: number, t: Strings): string {
 export default function VerifyScreen() {
   const theme = useTheme();
   const s = useStrings();
-  const [permission, requestPermission] = useCameraPermissions();
+  const [permission, requestPermission, getPermission] = useCameraPermissions();
   const [verdict, setVerdict] = useState<{
     presentation: Presentation;
     sticky: boolean;
@@ -289,6 +289,25 @@ export default function VerifyScreen() {
     if (verdictTimer.current) clearTimeout(verdictTimer.current);
     if (assemblyTimer.current) clearTimeout(assemblyTimer.current);
   }, []);
+
+  // When access is permanently blocked, the only way back is the system Settings
+  // screen (reached via the "Open settings" button below). The permission hook
+  // doesn't learn about a change made there, so re-check on foreground: getPermission()
+  // re-queries the OS without prompting and refreshes the hook state.
+  //
+  // Gate this on the *blocked* state specifically. Showing the first-run permission
+  // prompt itself bounces the app through inactive→active, so an unconditional
+  // listener would fire a stale getPermission() that races requestPermission()'s
+  // result — leaving the first-run popup flow flaky. While undetermined we rely on
+  // requestPermission() alone; the listener only exists once we're blocked.
+  const blocked = !!permission && !permission.granted && !permission.canAskAgain;
+  useEffect(() => {
+    if (!cameraAvailable || !blocked) return;
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') getPermission().catch(() => {});
+    });
+    return () => sub.remove();
+  }, [cameraAvailable, blocked, getPermission]);
 
   // Keep the screen awake while the camera is live — this is a continuous
   // door/till scanner, so it shouldn't dim or sleep between holders.
@@ -556,7 +575,7 @@ export default function VerifyScreen() {
               ) : (
                 <IdleContent
                   cameraAvailable={cameraAvailable}
-                  blocked={!!permission && !permission.granted && !permission.canAskAgain}
+                  blocked={blocked}
                 />
               )}
             </View>

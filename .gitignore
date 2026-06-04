@@ -33,10 +33,17 @@ yarn-error.*
 # local env files
 .env*.local
 
+# store submission credentials
+credentials/
+
 # typescript
 *.tsbuildinfo
 
 example
+
+# Google Play developer account assets (profile icon, feature banner — not app icons)
+/icon-circle.png
+/jonathan-bangert-*.png
 
 # generated native folders
 /ios
