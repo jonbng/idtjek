@@ -1,0 +1,25 @@
+diff --git a/node_modules/expo-camera/android/src/main/java/expo/modules/camera/ExpoCameraView.kt b/node_modules/expo-camera/android/src/main/java/expo/modules/camera/ExpoCameraView.kt
+index d9690e3..f357194 100644
+--- a/node_modules/expo-camera/android/src/main/java/expo/modules/camera/ExpoCameraView.kt
++++ b/node_modules/expo-camera/android/src/main/java/expo/modules/camera/ExpoCameraView.kt
+@@ -531,7 +531,19 @@ class ExpoCameraView(
+     ImageAnalysis.Builder()
+       .setResolutionSelector(
+         ResolutionSelector.Builder()
+-          .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
++          // Cap barcode analysis at ~720p. ML Kit detection time scales with
++          // pixel count, so analysing at the full sensor resolution throttles
++          // the effective scan rate to near the holder's animated-QR flip rate
++          // (~6fps), so parts get missed and a whole loop is waited out. 720p
++          // resolves QR modules fine at verification distance while keeping
++          // detection fast enough to catch every frame on its first pass.
++          // (Patched via patch-package; revisit on expo-camera upgrades.)
++          .setResolutionStrategy(
++            ResolutionStrategy(
++              Size(1280, 720),
++              ResolutionStrategy.FALLBACK_RULE_CLOSEST_LOWER_THEN_HIGHER,
++            )
++          )
+           .build()
+       )
+       .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
