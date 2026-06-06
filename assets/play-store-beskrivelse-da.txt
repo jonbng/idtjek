@@ -1,0 +1,19 @@
+ID Tjek er til personalet ved døren, disken eller indgangen, der skal bekræfte alder hurtigt og sikkert.
+
+Kunden viser sin AltID alders-QR-kode. Du scanner med telefonen — appen viser ét tydeligt resultat: Over 18, Over 21, Under 18, eller at koden ikke kan bekræftes. Farver og haptik gør det nemt at læse uden at stirre på skærmen, selv når det går stærkt.
+
+Sådan virker det
+• Scanner AltID bevis-på-alder QR-koder (signeret og verificeret på enheden)
+• Viser kun aldersgrænsen — ikke navn, fødselsdato eller ID-detaljer
+• Understøtter 18+ og 21+ politik (18–20 kan markeres, hvis døren kræver 21+)
+• Afviser usikre koder — appen fejler på den sikre side, ikke med et "ja" som standard
+• Seneste tjek i denne session — ryddes, når appen lukkes
+
+Privatliv og sikkerhed
+• Alt sker på din telefon — ingen konto, ingen servere, ingen tracking
+• Kamera bruges kun til at læse QR-koden; billeder gemmes eller sendes ikke
+• Ingen personlige data forlader enheden
+
+ID Tjek er et værktøj til kontrol på stedet. Det erstatter ikke jeres interne procedurer eller fysisk ID, når det er påkrævet.
+
+Kræver AltID alders-QR fra kunden.
